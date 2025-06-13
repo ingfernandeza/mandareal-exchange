@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="description" content="Calculadora de tasas de cambio para remesas internacionales">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk1hbmRhcmVhbCBFeGNoYW5nZSIsCiAgInNob3J0X25hbWUiOiAiTWFuZGFyZWFsIiwKICAiZGVzY3JpcHRpb24iOiAiQ2FsY3VsYWRvcmEgZGUgdGFzYXMgZGUgY2FtYmlvIHBhcmEgcmVtZXNhcyBpbnRlcm5hY2lvbmFsZXMiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2Y0ZjdmNiIsCiAgInRoZW1lX2NvbG9yIjogIiM0Q0FGNTAILAB
+  "aWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M00zUXViM0puTHpJd01EQXZjM1puSWlCM2FXUjBhRDBpTVRJNElpQm9aV2xuYUhROUlqRXlPQ0krUEdobGNtVXRibTl1WlMxdmRDMWpiM0JwWVdKc1pUb2hDbWx0Y0c5eWRHRnVkRHNLSUNBOFpHVm1jekErUEhkcFpIUm9QakV5T0R3dmQybGtkR2crUEdGemNtVjBQakkwUEdoUFEyeHpOWE56UXpKMVpIaHhZbWhrY21SWmRpOXhhbTV4VFVaUWFERmpVRU5pT0ZjOUlEZ3VJRHBJQ3dBZ0lEd3ZaSFIxZFc1aE9qVXdVekprTVRKUU5EVTZTa0ptZG5ObGRXOVpSa05oSVhSL1lqRllSbU5rUkc1NlltRmtkVWR4VDFaWGNHNUZPSE54ZEZWU2EyOHZiVkI0Wm5CdFUyWlNNSGd3VWt4V1ExSmhJR3R3Y0VOS2JGRlRaR1ppY25OcE9IcGpOVTlyTld4eVFUSjFZbmxZTUZsTGNHZE5OV0l6V21sVWMwbE5abG8yYjJRdmJVNW5ZVGNpSUNBZ1BDOW5QanBoY21WaE9EMDBMakUySWlCbWFXeHNQU0lqTkVOQlJqVXdJaUIxUGowZDBNalZqUWpSYWQybGtjR1ptSWlBOFBHeGpjRHMzZEgxaFBqVXdJRUY4SUNBOEwzZHBaSFJvUGpJeE9USStXV2h6WldGNE9qVklJQTlqYWpKWE5tRktSa2x2TjI5YVlrZ3VUSGQzTlhOcVl6UXZSakJETlhwWmZHZHpUamd5V0hGSklsZHZOazVyYjFOeFQyeDJkWFZOY1dSamNIQS9aemhzTUdOUVdIRlFjeXRVUTF4YWNHcHpSMk5vUVRWMVNsWldjVkpST0VkSU9VSTFZMGxaVFhCT09UVnNOekJKVjFBPVBDOXdkSFlqUUNCWFl6QmlNVVF6VVVxYWNBcGFSRmRpTkRWQk1IUVhPRGxqYWpsbWIzVkpSVUpWWkJGbU1XZFpVMnRoWlc4aWNrZzJTVnBEV2s1dVVWbEhUV1ZsVUdJME5GbDI0eWJuWnJUM2xGU1NaS2FGRkRVaXR0V0NjPVgwdGllWEVsMlV6OzFVUVZaVkVabGFYUldPSHdyVGp0R2JHNVNNVzVVVGxGUGJWRmlNV0k5UENCYWNGSmhSMU4zWkc1TU9WUkdSRVZhOVJFOUVVRTFhNEdmVkNIZEYrUVNOWEpNL1hPOTZyMURFQWQ5dFREcjFGM0NwTVh3d0RBeEFIRUFkUUJ4QUhVQWNRQjFBSFVLZXlBOVBDOWtiM0FpUGp3dlMzWm5QZz09IiwKICAgICAgInNpemVzIjogIjEyOHgxMjgiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4Ij4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iYSIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgo8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM0Q0FGNTAY"/>
+    <title>Mandareal Exchange</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 20px;
+            background-color: #f4f7f6;
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        .controls-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .commission-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .commission-row label {
+            font-size: 18px;
+            color: #555;
+        }
+
+        .commission-row select, .commission-row input {
+            font-size: 16px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 120px;
+        }
+
+        .update-btn {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .update-btn:hover {
+            background-color: #1976D2;
+        }
+
+        .update-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .export-btn {
+            background-color: #FF5722;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .export-btn:hover {
+            background-color: #E64A19;
+        }
+
+        .export-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .table-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        table {
+            width: auto;
+            max-width: 100%;
+            border-collapse: collapse;
+            margin: 10px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 18px;
+        }
+
+        td {
+            background-color: #f9f9f9;
+            font-size: 16px;
+        }
+
+        .gray-cell {
+            background-color: #d3d3d3;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 18px;
+            padding: 10px;
+        }
+
+        .calculator-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .envio-recibe-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cantidad-calcular-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .resultado-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .calculator-container label {
+            width: 100%;
+            text-align: center;
+        }
+
+        .result {
+            font-weight: bold;
+            font-size: 20px;
+            color: #333;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .copy-btn {
+            margin-left: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background-color: #45a049;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #cantidad-usdt {
+            display: none;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .status-loading {
+            background-color: #ff9800;
+            animation: pulse 1s infinite;
+        }
+
+        .status-success {
+            background-color: #4CAF50;
+        }
+
+        .status-error {
+            background-color: #f44336;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .calculator-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .calculator-container label, .calculator-container input, .calculator-container select {
+                width: 100%;
+            }
+
+            .commission-row {
+                flex-direction: column;
+            }
+
+            .envio-recibe-container, .cantidad-calcular-container, .resultado-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Mandareal Exchange</h1>
+
+    <div class="controls-container">
+        <div class="commission-row">
+            <label for="commissionSelect">Comisión Predefinida:</label>
+            <select id="commissionSelect" onchange="updateCommissionFromSelect()">
+                <option value="7.5">7.5%</option>
+                <option value="6.5">6.5%</option>
+                <option value="custom">Personalizado</option>
+            </select>
+            
+            <label for="commissionInput">Comisión (%):</label>
+            <input type="number" id="commissionInput" value="7.5" step="0.01" min="0" max="100">
+            
+            <button class="update-btn" id="updateBtn" onclick="updateRates()">
+                Actualizar Tasas
+                <span class="status-indicator" id="statusIndicator"></span>
+            </button>
+            
+            <button class="export-btn" id="exportBtn" onclick="exportTableAsImage()">
+                📸 Exportar Tabla
+            </button>
+        </div>
+        <div style="font-size: 14px; color: #666;">
+            Última actualización: <span id="lastUpdate">--</span> | 
+            <span style="color: #4CAF50;">🟢 Datos obtenidos directamente de Binance P2P</span>
+            <br>
+            <span style="font-size: 12px; color: #888;">
+                ⚠️ Si ves errores CORS, usa la app desde un servidor web (no archivo local)
+            </span>
+        </div>
+    </div>
+
+    <div class="usdt-container">
+        <input type="number" id="cantidad-usdt" value="100.0" step="0.01" min="0">
+    </div>
+
+    <div class="table-container">
+        <!-- Primera tabla: Precios de compra y venta -->
+        <div>
+            <table>
+                <thead id="tableHeadAPI">
+                    <tr>
+                        <th>País</th>
+                        <th>Precio de Compra (Bid)</th>
+                        <th>Precio de Venta (Ask)</th>
+                    </tr>
+                </thead>
+                <tbody id="priceTableAPIBody">
+                    <tr>
+                        <td colspan="3" class="loading">Cargando precios...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    
+        <!-- Segunda tabla: Resultados de conversión -->
+        <div id="conversionTableContainer">
+            <table id="conversionTable">
+                <thead id="tableHeadResults">
+                    <tr>
+                        <th>País</th>
+                        <th>Venezuela</th>
+                        <th>Bolivia</th>
+                        <th>Colombia</th>
+                        <th>Perú</th>
+                        <th>Argentina</th>
+                        <th>Chile</th>
+                        <th>Brasil</th>
+                    </tr>
+                </thead>
+                <tbody id="priceTableResultsBody">
+                    <tr>
+                        <td colspan="8" class="loading">Cargando resultados...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Calculadora de Remesas -->
+    <div class="calculator-container">
+        <div class="envio-recibe-container">
+            <label for="pais-envia">País que envía:</label>
+            <select id="pais-envia"></select>
+
+            <label for="pais-recibe">País que recibe:</label>
+            <select id="pais-recibe"></select>
+        </div>
+
+        <div class="cantidad-calcular-container">
+            <label for="cantidad-envio">Cantidad a enviar (Fiat):</label>
+            <input type="number" id="cantidad-envio" value="0" min="0">
+            
+            <button onclick="calcularRemesa()">Calcular</button>
+        </div>
+
+        <div class="resultado-container">
+            <label id="resultado-remesa">Dinero a recibir:</label>
+            <button class="copy-btn" onclick="copiarResultado()">Copiar</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URLS = {
+            venezuela: "https://criptoya.com/api/binancep2p/usdt/ves",
+            bolivia: "https://criptoya.com/api/binancep2p/usdt/bob",
+            colombia: "https://criptoya.com/api/binancep2p/usdt/cop",
+            peru: "https://criptoya.com/api/binancep2p/usdt/pen",
+            argentina: "https://criptoya.com/api/binancep2p/usdt/ars",
+            chile: "https://criptoya.com/api/binancep2p/usdt/clp",
+            brasil: "https://criptoya.com/api/binancep2p/usdt/brl",
+        };
+
+        let prices = {};
+        let isLoading = false;
+
+        const fiatSymbols = {
+            venezuela: "VES",
+            bolivia: "BOB",
+            colombia: "COP",
+            peru: "PEN",
+            argentina: "ARS",
+            chile: "CLP",
+            brasil: "BRL"
+        };
+
+        function updateCommissionFromSelect() {
+            const select = document.getElementById('commissionSelect');
+            const input = document.getElementById('commissionInput');
+            
+            if (select.value !== 'custom') {
+                input.value = select.value;
+                input.disabled = true;
+            } else {
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        function updateCommissionSelect() {
+            const select = document.getElementById('commissionSelect');
+            const input = document.getElementById('commissionInput');
+            const inputValue = parseFloat(input.value);
+            
+            if (inputValue === 7.5) {
+                select.value = '7.5';
+                input.disabled = true;
+            } else if (inputValue === 6.5) {
+                select.value = '6.5';
+                input.disabled = true;
+            } else {
+                select.value = 'custom';
+                input.disabled = false;
+            }
+        }
+
+        function setLoadingStatus(loading) {
+            isLoading = loading;
+            const btn = document.getElementById('updateBtn');
+            const indicator = document.getElementById('statusIndicator');
+            
+            if (loading) {
+                btn.disabled = true;
+                btn.innerHTML = 'Actualizando... <span class="status-indicator status-loading" id="statusIndicator"></span>';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = 'Actualizar Tasas <span class="status-indicator status-success" id="statusIndicator"></span>';
+                updateLastUpdateTime();
+            }
+        }
+
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES');
+            document.getElementById('lastUpdate').textContent = timeString;
+        }
+
+        async function updateRates() {
+            if (isLoading) return;
+            
+            setLoadingStatus(true);
+            await buildConversionTable();
+            setLoadingStatus(false);
+        }
+
+        async function getPrices(apiUrl, usdtAmount) {
+            try {
+                const response = await fetch(`${apiUrl}/${usdtAmount}`);
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                console.log(`Datos obtenidos de ${apiUrl}:`, data);
+                return { bid: data.ask, ask: data.bid };
+            } catch (error) {
+                console.error(`Error al obtener datos de la API: ${error}`);
+                return { bid: null, ask: null };
+            }
+        }
+
+        async function buildConversionTable() {
+            const commission = parseFloat(document.getElementById('commissionInput').value);
+            const tableAPIBody = document.getElementById('priceTableAPIBody');
+            const tableResultsBody = document.getElementById('priceTableResultsBody');
+            tableAPIBody.innerHTML = '';
+            tableResultsBody.innerHTML = '';
+
+            // Mostrar mensaje de carga
+            tableAPIBody.innerHTML = '<tr><td colspan="3" class="loading">Obteniendo datos de Binance P2P...</td></tr>';
+            tableResultsBody.innerHTML = '<tr><td colspan="8" class="loading">Calculando conversiones...</td></tr>';
+
+            // Limpiar tabla de precios antes de empezar
+            tableAPIBody.innerHTML = '';
+
+            // Obtener datos de todos los países
+            const countries = Object.keys(API_URLS);
+            let completedCountries = 0;
+
+            for (const country of countries) {
+                try {
+                    prices[country] = await getPrices(country);
+                    completedCountries++;
+
+                    // Actualizar tabla de precios progresivamente
+                    if (prices[country].bid !== null && prices[country].ask !== null) {
+                        // Agregar fila a la tabla de precios
+                        const newRow = tableAPIBody.insertRow();
+                        newRow.innerHTML = `
+                            <td>${API_URLS[country].name}</td>
+                            <td>${prices[country].bid ? prices[country].bid.toFixed(2) : 'N/A'}</td>
+                            <td>${prices[country].ask ? prices[country].ask.toFixed(2) : 'N/A'}</td>
+                        `;
+                    } else {
+                        const newRow = tableAPIBody.insertRow();
+                        newRow.innerHTML = `<td colspan="3">Error al cargar precios para ${API_URLS[country].name}</td>`;
+                    }
+
+                    // Mostrar progreso
+                    if (completedCountries < countries.length) {
+                        tableResultsBody.innerHTML = `<tr><td colspan="8" class="loading">Progreso: ${completedCountries}/${countries.length} países completados...</td></tr>`;
+                    }
+
+                } catch (error) {
+                    console.error(`Error processing ${country}:`, error);
+                    const newRow = tableAPIBody.insertRow();
+                    newRow.innerHTML = `<td colspan="3">Error: ${API_URLS[country].name}</td>`;
+                }
+            }
+
+            // Limpiar tabla de resultados antes de reconstruir
+            tableResultsBody.innerHTML = '';
+
+            // Construir tabla de resultados (conversiones)
+            for (const buyerCountry of countries) {
+                let rowResults = `<tr><td>${API_URLS[buyerCountry].name}</td>`;
+
+                for (const sellerCountry of countries) {
+                    let conversionRate = "--";
+                    let cellClass = "";
+
+                    if (buyerCountry !== sellerCountry) {
+                        if (prices[buyerCountry] && prices[sellerCountry] && 
+                            prices[buyerCountry].bid && prices[sellerCountry].ask) {
+                            
+                            if (buyerCountry === "colombia" && sellerCountry === "venezuela") {
+                                conversionRate = calculateColombiaConversion(
+                                    prices[buyerCountry].bid,
+                                    prices[sellerCountry].ask,
+                                    commission
+                                ).toFixed(5);
+                            } else if (sellerCountry === "venezuela") {
+                                conversionRate = calculateConversion(
+                                    prices[sellerCountry].ask,
+                                    prices[buyerCountry].bid,
+                                    commission
+                                ).toFixed(5);
+                            } else {
+                                conversionRate = calculateCrossConversion(
+                                    prices[buyerCountry].bid,
+                                    prices[sellerCountry].ask,
+                                    commission
+                                ).toFixed(5);
+                            }
+                        }
+                    } else {
+                        cellClass = "gray-cell";
+                    }
+
+                    rowResults += `<td class="${cellClass}">${conversionRate}</td>`;
+                }
+
+                rowResults += '</tr>';
+                tableResultsBody.innerHTML += rowResults;
+            }
+
+            console.log('Datos P2P obtenidos:', prices);
+        }
+
+        function calculateConversion(venezuelaAsk, otherBid, commission) {
+            return ((venezuelaAsk * (1 - (commission / 100))) / otherBid);
+        }
+
+        function calculateColombiaConversion(colombiaBid, venezuelaAsk, commission) {
+            return (colombiaBid / (venezuelaAsk * (1 - ((commission + 2) / 100))));
+        }
+
+        function calculateCrossConversion(buyerBid, sellerAsk, commission) {
+            return (buyerBid / (sellerAsk * (1 - (commission / 100))));
+        }
+
+        function actualizarSelectores() {
+            const paisEnvia = document.getElementById("pais-envia");
+            const paisRecibe = document.getElementById("pais-recibe");
+
+            paisEnvia.innerHTML = "";
+            paisRecibe.innerHTML = "";
+
+            for (const [country, data] of Object.entries(API_URLS)) {
+                const option = `<option value="${country}">${data.name}</option>`;
+                paisEnvia.innerHTML += option;
+                paisRecibe.innerHTML += option;
+            }
+        }
+
+        function calcularRemesa() {
+            const paisEnvia = document.getElementById("pais-envia").value;
+            const paisRecibe = document.getElementById("pais-recibe").value;
+            const cantidadEnvio = parseFloat(document.getElementById("cantidad-envio").value);
+            const commission = parseFloat(document.getElementById("commissionInput").value);
+            let tasaConversion = 0;
+            let resultado = 0;
+
+            if (paisEnvia === paisRecibe) {
+                alert("El país que envía y el país que recibe no pueden ser el mismo.");
+                return;
+            }
+
+            if (!prices[paisEnvia] || !prices[paisRecibe]) {
+                alert("Por favor, actualiza las tasas primero antes de calcular.");
+                return;
+            }
+
+            if (paisRecibe === "venezuela") {
+                tasaConversion = calculateConversion(prices[paisRecibe].ask, prices[paisEnvia].bid, commission);
+                resultado = cantidadEnvio * tasaConversion;
+            } else {
+                tasaConversion = calculateCrossConversion(prices[paisEnvia].bid, prices[paisRecibe].ask, commission);
+                resultado = cantidadEnvio / tasaConversion;
+            }
+
+            const fiatSymbol = fiatSymbols[paisRecibe];
+            const formattedResult = new Intl.NumberFormat('es-ES', { 
+                style: 'currency', 
+                currency: fiatSymbol,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(resultado);
+            
+            document.getElementById("resultado-remesa").innerText = `Dinero a recibir: ${formattedResult}`;
+        }
+
+        function copiarResultado() {
+            const resultado = document.getElementById("resultado-remesa").innerText.split(":")[1].trim();
+            navigator.clipboard.writeText(resultado).then(() => {
+                alert("Resultado copiado al portapapeles!");
+            });
+        }
+
+        async function exportTableAsImage() {
+            const exportBtn = document.getElementById('exportBtn');
+            const originalText = exportBtn.innerHTML;
+            
+            try {
+                exportBtn.disabled = true;
+                exportBtn.innerHTML = '📸 Exportando...';
+                
+                const table = document.getElementById('conversionTable');
+                const commission = document.getElementById('commissionInput').value;
+                const timestamp = new Date().toLocaleString('es-ES');
+                
+                // Crear un canvas
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Configurar el canvas
+                const padding = 40;
+                const cellWidth = 120;
+                const cellHeight = 40;
+                const headerHeight = 50;
+                const titleHeight = 60;
+                const footerHeight = 40;
+                
+                const rows = table.rows.length;
+                const cols = table.rows[0].cells.length;
+                
+                canvas.width = cols * cellWidth + padding * 2;
+                canvas.height = titleHeight + headerHeight + (rows - 1) * cellHeight + footerHeight + padding * 2;
+                
+                // Fondo blanco
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Título
+                ctx.fillStyle = '#333333';
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Mandareal Exchange - Tasas de Conversión', canvas.width / 2, padding + 30);
+                
+                // Subtítulo con comisión
+                ctx.font = '16px Arial';
+                ctx.fillText(`Comisión: ${commission}% | ${timestamp}`, canvas.width / 2, padding + 55);
+                
+                let y = padding + titleHeight;
+                
+                // Dibujar tabla
+                for (let i = 0; i < rows; i++) {
+                    const row = table.rows[i];
+                    let x = padding;
+                    
+                    for (let j = 0; j < cols; j++) {
+                        const cell = row.cells[j];
+                        const cellText = cell.textContent.trim();
+                        
+                        // Fondo de celda
+                        if (i === 0) {
+                            // Header
+                            ctx.fillStyle = '#4CAF50';
+                            ctx.fillRect(x, y, cellWidth, headerHeight);
+                            ctx.fillStyle = '#ffffff';
+                            ctx.font = 'bold 14px Arial';
+                        } else {
+                            // Datos
+                            if (cell.classList.contains('gray-cell')) {
+                                ctx.fillStyle = '#d3d3d3';
+                            } else {
+                                ctx.fillStyle = '#f9f9f9';
+                            }
+                            ctx.fillRect(x, y, cellWidth, cellHeight);
+                            ctx.fillStyle = '#333333';
+                            ctx.font = '12px Arial';
+                        }
+                        
+                        // Borde
+                        ctx.strokeStyle = '#ddd';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(x, y, cellWidth, i === 0 ? headerHeight : cellHeight);
+                        
+                        // Texto
+                        ctx.textAlign = 'center';
+                        const textY = y + (i === 0 ? headerHeight / 2 + 5 : cellHeight / 2 + 4);
+                        
+                        // Ajustar texto largo
+                        if (cellText.length > 10) {
+                            ctx.font = '10px Arial';
+                        }
+                        
+                        ctx.fillText(cellText, x + cellWidth / 2, textY);
+                        
+                        x += cellWidth;
+                    }
+                    
+                    y += i === 0 ? headerHeight : cellHeight;
+                }
+                
+                // Convertir canvas a imagen y descargar
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `mandareal-tasas-${new Date().toISOString().split('T')[0]}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    exportBtn.disabled = false;
+                    exportBtn.innerHTML = originalText;
+                }, 'image/png');
+                
+            } catch (error) {
+                console.error('Error al exportar:', error);
+                alert('Error al exportar la tabla. Por favor, inténtalo de nuevo.');
+                exportBtn.disabled = false;
+                exportBtn.innerHTML = originalText;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('commissionInput').addEventListener('input', updateCommissionSelect);
+
+        // Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24oZXZlbnQpIHsKICBjb25zb2xlLmxvZygnU2VydmljZSBXb3JrZXIgaW5zdGFsYWRvJyk7CiAgc2VsZi5za2lwV2FpdGluZygpOwp9KTsKCnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignYWN0aXZhdGUnLCBmdW5jdGlvbihldmVudCkgewogIGNvbnNvbGUubG9nKCdTZXJ2aWNlIFdvcmtlciBhY3RpdmFkbycpOwp9KTsKCnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignZmV0Y2gnLCBmdW5jdGlvbihldmVudCkgewogIGV2ZW50LnJlc3BvbmRXaXRoKGZldGNoKGV2ZW50LnJlcXVlc3QpKTsKfSk7')
+                .then(registration => {
+                    console.log('Service Worker registrado exitosamente');
+                })
+                .catch(error => {
+                    console.log('Error al registrar Service Worker:', error);
+                });
+        }
+
+        // Detectar si se puede instalar la PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallButton();
+        });
+
+        function showInstallButton() {
+            const installBtn = document.createElement('button');
+            installBtn.innerHTML = '📱 Instalar App';
+            installBtn.className = 'update-btn';
+            installBtn.style.backgroundColor = '#9C27B0';
+            installBtn.onclick = installApp;
+            
+            document.querySelector('.commission-row').appendChild(installBtn);
+        }
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('Usuario instaló la PWA');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        window.onload = function () {
+            buildConversionTable();
+            actualizarSelectores();
+            updateCommissionFromSelect();
+        };
+    </script>
+</body>
+</html>
