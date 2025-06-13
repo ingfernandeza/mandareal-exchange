@@ -147,32 +147,46 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             margin-top: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
-
+        
         .envio-recibe-container {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            gap: 15px;
+            gap: 30px;
         }
-
+        
         .cantidad-calcular-container {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            gap: 15px;
+            gap: 30px;
         }
-
+        
         .resultado-container {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             gap: 15px;
         }
-
+        
         .calculator-container label {
-            width: 100%;
-            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            color: #555;
+            min-width: 150px;
+            text-align: left;
+        }
+        
+        .calculator-container select, .calculator-container input {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            min-width: 150px;
         }
 
         .result {
@@ -253,23 +267,25 @@
             100% { opacity: 1; }
         }
 
-        @media (max-width: 768px) {
+            @media (max-width: 768px) {
             .calculator-container {
-                flex-direction: column;
-                text-align: center;
+                max-width: 100%;
+                margin: 20px auto 0;
             }
-
-            .calculator-container label, .calculator-container input, .calculator-container select {
-                width: 100%;
-            }
-
-            .commission-row {
-                flex-direction: column;
-            }
-
+        
             .envio-recibe-container, .cantidad-calcular-container, .resultado-container {
                 flex-direction: column;
-                gap: 10px;
+                gap: 15px;
+            }
+        
+            .calculator-container label {
+                text-align: center;
+                min-width: auto;
+            }
+        
+            .calculator-container select, .calculator-container input {
+                width: 100%;
+                min-width: auto;
             }
         }
     </style>
@@ -942,112 +958,111 @@
            });
        }
 
-       async function exportTableAsImage() {
-           const exportBtn = document.getElementById('exportBtn');
-           const originalText = exportBtn.innerHTML;
-           
-           try {
-               exportBtn.disabled = true;
-               exportBtn.innerHTML = '📸 Exportando...';
-               
-               const table = document.getElementById('conversionTable');
-               //const commission = document.getElementById('commissionInput').value;
-               const timestamp = new Date().toLocaleString('es-ES');
-               
-               const canvas = document.createElement('canvas');
-               const ctx = canvas.getContext('2d');
-               
-               const padding = 40;
-               const cellWidth = 120;
-               const cellHeight = 40;
-               const headerHeight = 50;
-               const titleHeight = 60;
-               const footerHeight = 40;
-               
-               const rows = table.rows.length;
-               const cols = table.rows[0].cells.length;
-               
-               canvas.width = cols * cellWidth + padding * 2;
-               canvas.height = titleHeight + headerHeight + (rows - 1) * cellHeight + footerHeight + padding * 2;
-               
-               ctx.fillStyle = '#ffffff';
-               ctx.fillRect(0, 0, canvas.width, canvas.height);
-               
-               ctx.fillStyle = '#333333';
-               ctx.font = 'bold 24px Arial';
-               ctx.textAlign = 'center';
-               ctx.fillText('Mandareal Exchange - Tasas de Conversión', canvas.width / 2, padding + 30);
-               
-               ctx.font = '16px Arial';
-               ctx.fillText(`Comisión: ${commission}% | ${timestamp}`, canvas.width / 2, padding + 55);
-               
-               let y = padding + titleHeight;
-               
-               for (let i = 0; i < rows; i++) {
-                   const row = table.rows[i];
-                   let x = padding;
-                   
-                   for (let j = 0; j < cols; j++) {
-                       const cell = row.cells[j];
-                       const cellText = cell.textContent.trim();
-                       
-                       if (i === 0) {
-                           ctx.fillStyle = '#4CAF50';
-                           ctx.fillRect(x, y, cellWidth, headerHeight);
-                           ctx.fillStyle = '#ffffff';
-                           ctx.font = 'bold 14px Arial';
-                       } else {
-                           if (cell.classList.contains('gray-cell')) {
-                               ctx.fillStyle = '#d3d3d3';
-                           } else {
-                               ctx.fillStyle = '#f9f9f9';
-                           }
-                           ctx.fillRect(x, y, cellWidth, cellHeight);
-                           ctx.fillStyle = '#333333';
-                           ctx.font = '12px Arial';
-                       }
-                       
-                       ctx.strokeStyle = '#ddd';
-                       ctx.lineWidth = 1;
-                       ctx.strokeRect(x, y, cellWidth, i === 0 ? headerHeight : cellHeight);
-                       
-                       ctx.textAlign = 'center';
-                       const textY = y + (i === 0 ? headerHeight / 2 + 5 : cellHeight / 2 + 4);
-                       
-                       if (cellText.length > 10) {
-                           ctx.font = '10px Arial';
-                       }
-                       
-                       ctx.fillText(cellText, x + cellWidth / 2, textY);
-                       
-                       x += cellWidth;
-                   }
-                   
-                   y += i === 0 ? headerHeight : cellHeight;
-               }
-               
-               canvas.toBlob(function(blob) {
-                   const url = URL.createObjectURL(blob);
-                   const a = document.createElement('a');
-                   a.href = url;
-                   a.download = `mandareal-tasas-${new Date().toISOString().split('T')[0]}.png`;
-                   document.body.appendChild(a);
-                   a.click();
-                   document.body.removeChild(a);
-                   URL.revokeObjectURL(url);
-                   
-                   exportBtn.disabled = false;
-                   exportBtn.innerHTML = originalText;
-               }, 'image/png');
-               
-           } catch (error) {
-               console.error('Error al exportar:', error);
-               alert('Error al exportar la tabla. Por favor, inténtalo de nuevo.');
-               exportBtn.disabled = false;
-               exportBtn.innerHTML = originalText;
-           }
-       }
-
+           async function exportTableAsImage() {
+        const exportBtn = document.getElementById('exportBtn');
+        const originalText = exportBtn.innerHTML;
+        
+        try {
+            exportBtn.disabled = true;
+            exportBtn.innerHTML = '📸 Exportando...';
+            
+            const table = document.getElementById('conversionTable');
+            const timestamp = new Date().toLocaleString('es-ES');
+            
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const padding = 40;
+            const cellWidth = 120;
+            const cellHeight = 40;
+            const headerHeight = 50;
+            const titleHeight = 60;
+            const footerHeight = 40;
+            
+            const rows = table.rows.length;
+            const cols = table.rows[0].cells.length;
+            
+            canvas.width = cols * cellWidth + padding * 2;
+            canvas.height = titleHeight + headerHeight + (rows - 1) * cellHeight + footerHeight + padding * 2;
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Mandareal Exchange - Tasas de Conversión', canvas.width / 2, padding + 30);
+            
+            // Solo mostrar timestamp, sin comisión
+            ctx.font = '16px Arial';
+            ctx.fillText(`${timestamp}`, canvas.width / 2, padding + 55);
+            
+            let y = padding + titleHeight;
+            
+            for (let i = 0; i < rows; i++) {
+                const row = table.rows[i];
+                let x = padding;
+                
+                for (let j = 0; j < cols; j++) {
+                    const cell = row.cells[j];
+                    const cellText = cell.textContent.trim();
+                    
+                    if (i === 0) {
+                        ctx.fillStyle = '#4CAF50';
+                        ctx.fillRect(x, y, cellWidth, headerHeight);
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 14px Arial';
+                    } else {
+                        if (cell.classList.contains('gray-cell')) {
+                            ctx.fillStyle = '#d3d3d3';
+                        } else {
+                            ctx.fillStyle = '#f9f9f9';
+                        }
+                        ctx.fillRect(x, y, cellWidth, cellHeight);
+                        ctx.fillStyle = '#333333';
+                        ctx.font = '12px Arial';
+                    }
+                    
+                    ctx.strokeStyle = '#ddd';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x, y, cellWidth, i === 0 ? headerHeight : cellHeight);
+                    
+                    ctx.textAlign = 'center';
+                    const textY = y + (i === 0 ? headerHeight / 2 + 5 : cellHeight / 2 + 4);
+                    
+                    if (cellText.length > 10) {
+                        ctx.font = '10px Arial';
+                    }
+                    
+                    ctx.fillText(cellText, x + cellWidth / 2, textY);
+                    
+                    x += cellWidth;
+                }
+                
+                y += i === 0 ? headerHeight : cellHeight;
+            }
+            
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `mandareal-tasas-${new Date().toISOString().split('T')[0]}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                exportBtn.disabled = false;
+                exportBtn.innerHTML = originalText;
+            }, 'image/png');
+            
+        } catch (error) {
+            console.error('Error al exportar:', error);
+            alert('Error al exportar la tabla. Por favor, inténtalo de nuevo.');
+            exportBtn.disabled = false;
+            exportBtn.innerHTML = originalText;
+        }
+    }
        // Event listeners
        document.getElementById('commissionInput').addEventListener('input', updateCommissionSelect);
 
