@@ -279,7 +279,7 @@
     <h1>Mandareal Exchange</h1>
 
     <div class="warning-box">
-        📍 <strong>Fuentes de datos P2P:</strong> Esta aplicación obtiene precios en tiempo real desde Binance P2P, Bybit P2P, KuCoin P2P y OKX P2P. 
+        📍 <strong>Fuentes de datos P2P:</strong> Esta aplicación obtiene precios en tiempo real desde CriptoYa, Binance P2P, Bybit P2P, KuCoin P2P y OKX P2P. 
         Si una fuente no está disponible, automáticamente cambia a la siguiente para garantizar datos actualizados.
     </div>
 
@@ -306,7 +306,7 @@
         </div>
         <div style="font-size: 14px; color: #666;">
             Última actualización: <span id="lastUpdate">--</span> | 
-            <span style="color: #4CAF50;">🟢 Datos P2P: Binance | Bybit | KuCoin | OKX</span>
+            <span style="color: #4CAF50;">🟢 Datos P2P: CriptoYa | Binance | Bybit | KuCoin | OKX</span>
         </div>
     </div>
 
@@ -474,13 +474,15 @@
             setLoadingStatus(false);
         }
 
+        // Intentar múltiples fuentes P2P con CriptoYa como prioridad
         async function tryMultipleSources(fiat) {
             const sources = [
+                () => tryCriptoYa(fiat),
                 () => tryBinanceWithProxy(fiat),
                 () => tryBybitProxy(fiat),
                 () => tryKucoinP2P(fiat),
                 () => tryOKXP2P(fiat),
-                () => getMarketPrice(fiat)
+                () => getMarketPrice(fiat) // Solo como último recurso
             ];
 
             for (const source of sources) {
@@ -498,6 +500,84 @@
 
             console.log(`⚠️ Usando precios de fallback para ${fiat}`);
             return getMarketPrice(fiat);
+        }
+
+        async function tryCriptoYa(fiat) {
+            const criptoyaUrls = {
+                'VES': 'https://criptoya.com/api/binancep2p/usdt/ves',
+                'BOB': 'https://criptoya.com/api/binancep2p/usdt/bob',
+                'COP': 'https://criptoya.com/api/binancep2p/usdt/cop',
+                'PEN': 'https://criptoya.com/api/binancep2p/usdt/pen',
+                'ARS': 'https://criptoya.com/api/binancep2p/usdt/ars',
+                'CLP': 'https://criptoya.com/api/binancep2p/usdt/clp',
+                'BRL': 'https://criptoya.com/api/binancep2p/usdt/brl'
+            };
+
+            const url = criptoyaUrls[fiat];
+            if (!url) {
+                throw new Error(`CriptoYa no disponible para ${fiat}`);
+            }
+
+            try {
+                console.log(`🔄 Intentando CriptoYa para ${fiat}...`);
+                
+                // Intentar acceso directo primero
+                const response = await fetch(`${url}/100`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`📊 Datos CriptoYa para ${fiat}:`, data);
+                    
+                    if (data.ask && data.bid) {
+                        return {
+                            bid: parseFloat(data.ask), // CriptoYa: ask = precio al que podemos vender USDT
+                            ask: parseFloat(data.bid), // CriptoYa: bid = precio al que podemos comprar USDT
+                            source: "CriptoYa"
+                        };
+                    }
+                }
+                
+                // Si el acceso directo falla, intentar con proxy
+                return await tryCriptoYaWithProxy(fiat, url);
+                
+            } catch (error) {
+                console.log(`CriptoYa directo falló para ${fiat}:`, error.message);
+                // Intentar con proxy como fallback
+                return await tryCriptoYaWithProxy(fiat, url);
+            }
+        }
+
+        async function tryCriptoYaWithProxy(fiat, url) {
+            const proxies = [
+                'https://api.allorigins.win/raw?url=',
+                'https://cors-anywhere.herokuapp.com/',
+                'https://thingproxy.freeboard.io/fetch/'
+            ];
+
+            for (const proxy of proxies) {
+                try {
+                    console.log(`🔄 Intentando CriptoYa con proxy para ${fiat}...`);
+                    
+                    const response = await fetch(proxy + encodeURIComponent(`${url}/100`));
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        if (data.ask && data.bid) {
+                            return {
+                                bid: parseFloat(data.ask),
+                                ask: parseFloat(data.bid),
+                                source: "CriptoYa (Proxy)"
+                            };
+                        }
+                    }
+                } catch (error) {
+                    console.log(`Proxy CriptoYa ${proxy.substring(0, 30)}... falló:`, error.message);
+                    continue;
+                }
+            }
+            
+            throw new Error('Todos los proxies de CriptoYa fallaron');
         }
 
         async function tryBinanceWithProxy(fiat) {
@@ -722,392 +802,392 @@
                     completedCountries++;
 
                     if (prices[country] && prices[country].bid !== null && prices[country].ask !== null) {
-                        const newRow = tableAPIBody.insertRow();
-                        newRow.innerHTML = `
-                            <td>${API_URLS[country].name}</td>
-                            <td>${prices[country].bid.toFixed(2)}</td>
-                            <td>${prices[country].ask.toFixed(2)}</td>
-                            <td style="font-size: 12px; color: #666;">${prices[country].source}</td>
-                        `;
-                    } else {
-                        const newRow = tableAPIBody.insertRow();
-                        newRow.innerHTML = `<td colspan="4">Error: ${API_URLS[country].name}</td>`;
-                    }
+                       const newRow = tableAPIBody.insertRow();
+                       newRow.innerHTML = `
+                           <td>${API_URLS[country].name}</td>
+                           <td>${prices[country].bid.toFixed(2)}</td>
+                           <td>${prices[country].ask.toFixed(2)}</td>
+                           <td style="font-size: 12px; color: #666;">${prices[country].source}</td>
+                       `;
+                   } else {
+                       const newRow = tableAPIBody.insertRow();
+                       newRow.innerHTML = `<td colspan="4">Error: ${API_URLS[country].name}</td>`;
+                   }
 
-                    if (completedCountries < countries.length) {
-                        tableResultsBody.innerHTML = `<tr><td colspan="8" class="loading">Progreso: ${completedCountries}/${countries.length} países...</td></tr>`;
-                    }
+                   if (completedCountries < countries.length) {
+                       tableResultsBody.innerHTML = `<tr><td colspan="8" class="loading">Progreso: ${completedCountries}/${countries.length} países...</td></tr>`;
+                   }
 
-                } catch (error) {
-                    console.error(`Error processing ${country}:`, error);
-                    const newRow = tableAPIBody.insertRow();
-                    newRow.innerHTML = `<td colspan="4">Error: ${API_URLS[country].name}</td>`;
-                }
-            }
+               } catch (error) {
+                   console.error(`Error processing ${country}:`, error);
+                   const newRow = tableAPIBody.insertRow();
+                   newRow.innerHTML = `<td colspan="4">Error: ${API_URLS[country].name}</td>`;
+               }
+           }
 
-            tableResultsBody.innerHTML = '';
+           tableResultsBody.innerHTML = '';
 
-            for (const buyerCountry of countries) {
-                let rowResults = `<tr><td>${API_URLS[buyerCountry].name}</td>`;
+           for (const buyerCountry of countries) {
+               let rowResults = `<tr><td>${API_URLS[buyerCountry].name}</td>`;
 
-                for (const sellerCountry of countries) {
-                    let conversionRate = "--";
-                    let cellClass = "";
+               for (const sellerCountry of countries) {
+                   let conversionRate = "--";
+                   let cellClass = "";
 
-                    if (buyerCountry !== sellerCountry) {
-                        if (prices[buyerCountry] && prices[sellerCountry] && 
-                            prices[buyerCountry].bid && prices[sellerCountry].ask) {
-                            
-                            if (buyerCountry === "colombia" && sellerCountry === "venezuela") {
-                                conversionRate = calculateColombiaConversion(
-                                    prices[buyerCountry].bid,
-                                    prices[sellerCountry].ask,
-                                    commission
-                                ).toFixed(5);
-                            } else if (sellerCountry === "venezuela") {
-                                conversionRate = calculateConversion(
-                                    prices[sellerCountry].ask,
-                                    prices[buyerCountry].bid,
-                                    commission
-                                ).toFixed(5);
-                            } else {
-                                conversionRate = calculateCrossConversion(
-                                    prices[buyerCountry].bid,
-                                    prices[sellerCountry].ask,
-                                    commission
-                                ).toFixed(5);
-                            }
-                        }
-                    } else {
-                        cellClass = "gray-cell";
-                    }
+                   if (buyerCountry !== sellerCountry) {
+                       if (prices[buyerCountry] && prices[sellerCountry] && 
+                           prices[buyerCountry].bid && prices[sellerCountry].ask) {
+                           
+                           if (buyerCountry === "colombia" && sellerCountry === "venezuela") {
+                               conversionRate = calculateColombiaConversion(
+                                   prices[buyerCountry].bid,
+                                   prices[sellerCountry].ask,
+                                   commission
+                               ).toFixed(5);
+                           } else if (sellerCountry === "venezuela") {
+                               conversionRate = calculateConversion(
+                                   prices[sellerCountry].ask,
+                                   prices[buyerCountry].bid,
+                                   commission
+                               ).toFixed(5);
+                           } else {
+                               conversionRate = calculateCrossConversion(
+                                   prices[buyerCountry].bid,
+                                   prices[sellerCountry].ask,
+                                   commission
+                               ).toFixed(5);
+                           }
+                       }
+                   } else {
+                       cellClass = "gray-cell";
+                   }
 
-                    rowResults += `<td class="${cellClass}">${conversionRate}</td>`;
-                }
+                   rowResults += `<td class="${cellClass}">${conversionRate}</td>`;
+               }
 
-                rowResults += '</tr>';
-                tableResultsBody.innerHTML += rowResults;
-            }
+               rowResults += '</tr>';
+               tableResultsBody.innerHTML += rowResults;
+           }
 
-            console.log('📊 Datos P2P obtenidos:', prices);
-        }
+           console.log('📊 Datos P2P obtenidos:', prices);
+       }
 
-        function calculateConversion(venezuelaAsk, otherBid, commission) {
-            return ((venezuelaAsk * (1 - (commission / 100))) / otherBid);
-        }
+       function calculateConversion(venezuelaAsk, otherBid, commission) {
+           return ((venezuelaAsk * (1 - (commission / 100))) / otherBid);
+       }
 
-        function calculateColombiaConversion(colombiaBid, venezuelaAsk, commission) {
-            return (colombiaBid / (venezuelaAsk * (1 - ((commission + 2) / 100))));
-        }
+       function calculateColombiaConversion(colombiaBid, venezuelaAsk, commission) {
+           return (colombiaBid / (venezuelaAsk * (1 - ((commission + 2) / 100))));
+       }
 
-        function calculateCrossConversion(buyerBid, sellerAsk, commission) {
-            return (buyerBid / (sellerAsk * (1 - (commission / 100))));
-        }
+       function calculateCrossConversion(buyerBid, sellerAsk, commission) {
+           return (buyerBid / (sellerAsk * (1 - (commission / 100))));
+       }
 
-        function actualizarSelectores() {
-            const paisEnvia = document.getElementById("pais-envia");
-            const paisRecibe = document.getElementById("pais-recibe");
+       function actualizarSelectores() {
+           const paisEnvia = document.getElementById("pais-envia");
+           const paisRecibe = document.getElementById("pais-recibe");
 
-            paisEnvia.innerHTML = "";
-            paisRecibe.innerHTML = "";
+           paisEnvia.innerHTML = "";
+           paisRecibe.innerHTML = "";
 
-            for (const [country, data] of Object.entries(API_URLS)) {
-                const option = `<option value="${country}">${data.name}</option>`;
-                paisEnvia.innerHTML += option;
-                paisRecibe.innerHTML += option;
-            }
-        }
+           for (const [country, data] of Object.entries(API_URLS)) {
+               const option = `<option value="${country}">${data.name}</option>`;
+               paisEnvia.innerHTML += option;
+               paisRecibe.innerHTML += option;
+           }
+       }
 
-        function calcularRemesa() {
-            const paisEnvia = document.getElementById("pais-envia").value;
-            const paisRecibe = document.getElementById("pais-recibe").value;
-            const cantidadEnvio = parseFloat(document.getElementById("cantidad-envio").value);
-            const commission = parseFloat(document.getElementById("commissionInput").value);
-            let tasaConversion = 0;
-            let resultado = 0;
+       function calcularRemesa() {
+           const paisEnvia = document.getElementById("pais-envia").value;
+           const paisRecibe = document.getElementById("pais-recibe").value;
+           const cantidadEnvio = parseFloat(document.getElementById("cantidad-envio").value);
+           const commission = parseFloat(document.getElementById("commissionInput").value);
+           let tasaConversion = 0;
+           let resultado = 0;
 
-            if (paisEnvia === paisRecibe) {
-                alert("El país que envía y el país que recibe no pueden ser el mismo.");
-                return;
-            }
+           if (paisEnvia === paisRecibe) {
+               alert("El país que envía y el país que recibe no pueden ser el mismo.");
+               return;
+           }
 
-            if (!prices[paisEnvia] || !prices[paisRecibe]) {
-                alert("Por favor, actualiza las tasas primero antes de calcular.");
-                return;
-            }
+           if (!prices[paisEnvia] || !prices[paisRecibe]) {
+               alert("Por favor, actualiza las tasas primero antes de calcular.");
+               return;
+           }
 
-            if (paisRecibe === "venezuela") {
-                tasaConversion = calculateConversion(prices[paisRecibe].ask, prices[paisEnvia].bid, commission);
-                resultado = cantidadEnvio * tasaConversion;
-            } else {
-                tasaConversion = calculateCrossConversion(prices[paisEnvia].bid, prices[paisRecibe].ask, commission);
-                resultado = cantidadEnvio / tasaConversion;
-            }
+           if (paisRecibe === "venezuela") {
+               tasaConversion = calculateConversion(prices[paisRecibe].ask, prices[paisEnvia].bid, commission);
+               resultado = cantidadEnvio * tasaConversion;
+           } else {
+               tasaConversion = calculateCrossConversion(prices[paisEnvia].bid, prices[paisRecibe].ask, commission);
+               resultado = cantidadEnvio / tasaConversion;
+           }
 
-            const fiatSymbol = fiatSymbols[paisRecibe];
-            const formattedResult = new Intl.NumberFormat('es-ES', { 
-                style: 'currency', 
-                currency: fiatSymbol,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(resultado);
-            
-            document.getElementById("resultado-remesa").innerText = `Dinero a recibir: ${formattedResult}`;
-        }
+           const fiatSymbol = fiatSymbols[paisRecibe];
+           const formattedResult = new Intl.NumberFormat('es-ES', { 
+               style: 'currency', 
+               currency: fiatSymbol,
+               minimumFractionDigits: 2,
+               maximumFractionDigits: 2
+           }).format(resultado);
+           
+           document.getElementById("resultado-remesa").innerText = `Dinero a recibir: ${formattedResult}`;
+       }
 
-        function copiarResultado() {
-            const resultado = document.getElementById("resultado-remesa").innerText.split(":")[1].trim();
-            navigator.clipboard.writeText(resultado).then(() => {
-                alert("Resultado copiado al portapapeles!");
-            });
-        }
+       function copiarResultado() {
+           const resultado = document.getElementById("resultado-remesa").innerText.split(":")[1].trim();
+           navigator.clipboard.writeText(resultado).then(() => {
+               alert("Resultado copiado al portapapeles!");
+           });
+       }
 
-        async function exportTableAsImage() {
-            const exportBtn = document.getElementById('exportBtn');
-            const originalText = exportBtn.innerHTML;
-            
-            try {
-                exportBtn.disabled = true;
-                exportBtn.innerHTML = '📸 Exportando...';
-                
-                const table = document.getElementById('conversionTable');
-                const commission = document.getElementById('commissionInput').value;
-                const timestamp = new Date().toLocaleString('es-ES');
-                
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                const padding = 40;
-                const cellWidth = 120;
-                const cellHeight = 40;
-                const headerHeight = 50;
-                const titleHeight = 60;
-                const footerHeight = 40;
-                
-                const rows = table.rows.length;
-                const cols = table.rows[0].cells.length;
-                
-                canvas.width = cols * cellWidth + padding * 2;
-                canvas.height = titleHeight + headerHeight + (rows - 1) * cellHeight + footerHeight + padding * 2;
-                
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                ctx.fillStyle = '#333333';
-                ctx.font = 'bold 24px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('Mandareal Exchange - Tasas de Conversión', canvas.width / 2, padding + 30);
-                
-                ctx.font = '16px Arial';
-                ctx.fillText(`Comisión: ${commission}% | ${timestamp}`, canvas.width / 2, padding + 55);
-                
-                let y = padding + titleHeight;
-                
-                for (let i = 0; i < rows; i++) {
-                    const row = table.rows[i];
-                    let x = padding;
-                    
-                    for (let j = 0; j < cols; j++) {
-                        const cell = row.cells[j];
-                        const cellText = cell.textContent.trim();
-                        
-                        if (i === 0) {
-                            ctx.fillStyle = '#4CAF50';
-                            ctx.fillRect(x, y, cellWidth, headerHeight);
-                            ctx.fillStyle = '#ffffff';
-                            ctx.font = 'bold 14px Arial';
-                        } else {
-                            if (cell.classList.contains('gray-cell')) {
-                                ctx.fillStyle = '#d3d3d3';
-                            } else {
-                                ctx.fillStyle = '#f9f9f9';
-                            }
-                            ctx.fillRect(x, y, cellWidth, cellHeight);
-                            ctx.fillStyle = '#333333';
-                            ctx.font = '12px Arial';
-                        }
-                        
-                        ctx.strokeStyle = '#ddd';
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(x, y, cellWidth, i === 0 ? headerHeight : cellHeight);
-                        
-                        ctx.textAlign = 'center';
-                        const textY = y + (i === 0 ? headerHeight / 2 + 5 : cellHeight / 2 + 4);
-                        
-                        if (cellText.length > 10) {
-                            ctx.font = '10px Arial';
-                        }
-                        
-                        ctx.fillText(cellText, x + cellWidth / 2, textY);
-                        
-                        x += cellWidth;
-                    }
-                    
-                    y += i === 0 ? headerHeight : cellHeight;
-                }
-                
-                canvas.toBlob(function(blob) {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `mandareal-tasas-${new Date().toISOString().split('T')[0]}.png`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    
-                    exportBtn.disabled = false;
-                    exportBtn.innerHTML = originalText;
-                }, 'image/png');
-                
-            } catch (error) {
-                console.error('Error al exportar:', error);
-                alert('Error al exportar la tabla. Por favor, inténtalo de nuevo.');
-                exportBtn.disabled = false;
-                exportBtn.innerHTML = originalText;
-            }
-        }
+       async function exportTableAsImage() {
+           const exportBtn = document.getElementById('exportBtn');
+           const originalText = exportBtn.innerHTML;
+           
+           try {
+               exportBtn.disabled = true;
+               exportBtn.innerHTML = '📸 Exportando...';
+               
+               const table = document.getElementById('conversionTable');
+               //const commission = document.getElementById('commissionInput').value;
+               const timestamp = new Date().toLocaleString('es-ES');
+               
+               const canvas = document.createElement('canvas');
+               const ctx = canvas.getContext('2d');
+               
+               const padding = 40;
+               const cellWidth = 120;
+               const cellHeight = 40;
+               const headerHeight = 50;
+               const titleHeight = 60;
+               const footerHeight = 40;
+               
+               const rows = table.rows.length;
+               const cols = table.rows[0].cells.length;
+               
+               canvas.width = cols * cellWidth + padding * 2;
+               canvas.height = titleHeight + headerHeight + (rows - 1) * cellHeight + footerHeight + padding * 2;
+               
+               ctx.fillStyle = '#ffffff';
+               ctx.fillRect(0, 0, canvas.width, canvas.height);
+               
+               ctx.fillStyle = '#333333';
+               ctx.font = 'bold 24px Arial';
+               ctx.textAlign = 'center';
+               ctx.fillText('Mandareal Exchange - Tasas de Conversión', canvas.width / 2, padding + 30);
+               
+               ctx.font = '16px Arial';
+               ctx.fillText(`Comisión: ${commission}% | ${timestamp}`, canvas.width / 2, padding + 55);
+               
+               let y = padding + titleHeight;
+               
+               for (let i = 0; i < rows; i++) {
+                   const row = table.rows[i];
+                   let x = padding;
+                   
+                   for (let j = 0; j < cols; j++) {
+                       const cell = row.cells[j];
+                       const cellText = cell.textContent.trim();
+                       
+                       if (i === 0) {
+                           ctx.fillStyle = '#4CAF50';
+                           ctx.fillRect(x, y, cellWidth, headerHeight);
+                           ctx.fillStyle = '#ffffff';
+                           ctx.font = 'bold 14px Arial';
+                       } else {
+                           if (cell.classList.contains('gray-cell')) {
+                               ctx.fillStyle = '#d3d3d3';
+                           } else {
+                               ctx.fillStyle = '#f9f9f9';
+                           }
+                           ctx.fillRect(x, y, cellWidth, cellHeight);
+                           ctx.fillStyle = '#333333';
+                           ctx.font = '12px Arial';
+                       }
+                       
+                       ctx.strokeStyle = '#ddd';
+                       ctx.lineWidth = 1;
+                       ctx.strokeRect(x, y, cellWidth, i === 0 ? headerHeight : cellHeight);
+                       
+                       ctx.textAlign = 'center';
+                       const textY = y + (i === 0 ? headerHeight / 2 + 5 : cellHeight / 2 + 4);
+                       
+                       if (cellText.length > 10) {
+                           ctx.font = '10px Arial';
+                       }
+                       
+                       ctx.fillText(cellText, x + cellWidth / 2, textY);
+                       
+                       x += cellWidth;
+                   }
+                   
+                   y += i === 0 ? headerHeight : cellHeight;
+               }
+               
+               canvas.toBlob(function(blob) {
+                   const url = URL.createObjectURL(blob);
+                   const a = document.createElement('a');
+                   a.href = url;
+                   a.download = `mandareal-tasas-${new Date().toISOString().split('T')[0]}.png`;
+                   document.body.appendChild(a);
+                   a.click();
+                   document.body.removeChild(a);
+                   URL.revokeObjectURL(url);
+                   
+                   exportBtn.disabled = false;
+                   exportBtn.innerHTML = originalText;
+               }, 'image/png');
+               
+           } catch (error) {
+               console.error('Error al exportar:', error);
+               alert('Error al exportar la tabla. Por favor, inténtalo de nuevo.');
+               exportBtn.disabled = false;
+               exportBtn.innerHTML = originalText;
+           }
+       }
 
-        // Event listeners
-        document.getElementById('commissionInput').addEventListener('input', updateCommissionSelect);
+       // Event listeners
+       document.getElementById('commissionInput').addEventListener('input', updateCommissionSelect);
 
-        // Service Worker para PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24oZXZlbnQpIHsKICBjb25zb2xlLmxvZygnU2VydmljZSBXb3JrZXIgaW5zdGFsYWRvJyk7CiAgc2VsZi5za2lwV2FpdGluZygpOwp9KTsKCnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignYWN0aXZhdGUnLCBmdW5jdGlvbihldmVudCkgewogIGNvbnNvbGUubG9nKCdTZXJ2aWNlIFdvcmtlciBhY3RpdmFkbycpOwp9KTsKCnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignZmV0Y2gnLCBmdW5jdGlvbihldmVudCkgewogIGV2ZW50LnJlc3BvbmRXaXRoKGZldGNoKGV2ZW50LnJlcXVlc3QpKTsKfSk7')
-                .then(registration => {
-                    console.log('✅ Service Worker registrado exitosamente');
-                })
-                .catch(error => {
-                    console.log('❌ Error al registrar Service Worker:', error);
-                });
-        }
+       // Service Worker para PWA
+       if ('serviceWorker' in navigator) {
+           navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24oZXZlbnQpIHsKICBjb25zb2xlLmxvZygnU2VydmljZSBXb3JrZXIgaW5zdGFsYWRvJyk7CiAgc2VsZi5za2lwV2FpdGluZygpOwp9KTsKCnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignYWN0aXZhdGUnLCBmdW5jdGlvbihldmVudCkgewogIGNvbnNvbGUubG9nKCdTZXJ2aWNlIFdvcmtlciBhY3RpdmFkbycpOwp9KTsKCnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignZmV0Y2gnLCBmdW5jdGlvbihldmVudCkgewogIGV2ZW50LnJlc3BvbmRXaXRoKGZldGNoKGV2ZW50LnJlcXVlc3QpKTsKfSk7')
+               .then(registration => {
+                   console.log('✅ Service Worker registrado exitosamente');
+               })
+               .catch(error => {
+                   console.log('❌ Error al registrar Service Worker:', error);
+               });
+       }
 
-        // Detectar si se puede instalar la PWA
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            showInstallButton();
-        });
+       // Detectar si se puede instalar la PWA
+       let deferredPrompt;
+       window.addEventListener('beforeinstallprompt', (e) => {
+           e.preventDefault();
+           deferredPrompt = e;
+           showInstallButton();
+       });
 
-        function showInstallButton() {
-            const installBtn = document.createElement('button');
-            installBtn.innerHTML = '📱 Instalar App';
-            installBtn.className = 'update-btn';
-            installBtn.style.backgroundColor = '#9C27B0';
-            installBtn.onclick = installApp;
-            
-            document.querySelector('.commission-row').appendChild(installBtn);
-        }
+       function showInstallButton() {
+           const installBtn = document.createElement('button');
+           installBtn.innerHTML = '📱 Instalar App';
+           installBtn.className = 'update-btn';
+           installBtn.style.backgroundColor = '#9C27B0';
+           installBtn.onclick = installApp;
+           
+           document.querySelector('.commission-row').appendChild(installBtn);
+       }
 
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('✅ Usuario instaló la PWA');
-                    }
-                    deferredPrompt = null;
-                });
-            }
-        }
+       function installApp() {
+           if (deferredPrompt) {
+               deferredPrompt.prompt();
+               deferredPrompt.userChoice.then((choiceResult) => {
+                   if (choiceResult.outcome === 'accepted') {
+                       console.log('✅ Usuario instaló la PWA');
+                   }
+                   deferredPrompt = null;
+               });
+           }
+       }
 
-        // Inicialización automática de precios de mercado
-        function initializeMarketPrices() {
-            console.log('🚀 Inicializando con precios de mercado...');
-            
-            Object.keys(API_URLS).forEach(country => {
-                const fiat = API_URLS[country].fiat;
-                prices[country] = getMarketPrice(fiat);
-            });
-            
-            // Actualizar tabla inmediatamente
-            buildConversionTableFromCache();
-        }
+       // Inicialización automática de precios de mercado
+       function initializeMarketPrices() {
+           console.log('🚀 Inicializando con precios de mercado...');
+           
+           Object.keys(API_URLS).forEach(country => {
+               const fiat = API_URLS[country].fiat;
+               prices[country] = getMarketPrice(fiat);
+           });
+           
+           // Actualizar tabla inmediatamente
+           buildConversionTableFromCache();
+       }
 
-        function buildConversionTableFromCache() {
-            const commission = parseFloat(document.getElementById('commissionInput').value);
-            const tableAPIBody = document.getElementById('priceTableAPIBody');
-            const tableResultsBody = document.getElementById('priceTableResultsBody');
-            
-            // Limpiar tablas
-            tableAPIBody.innerHTML = '';
-            tableResultsBody.innerHTML = '';
+       function buildConversionTableFromCache() {
+           const commission = parseFloat(document.getElementById('commissionInput').value);
+           const tableAPIBody = document.getElementById('priceTableAPIBody');
+           const tableResultsBody = document.getElementById('priceTableResultsBody');
+           
+           // Limpiar tablas
+           tableAPIBody.innerHTML = '';
+           tableResultsBody.innerHTML = '';
 
-            // Poblar tabla de precios
-            Object.keys(API_URLS).forEach(country => {
-                if (prices[country]) {
-                    const newRow = tableAPIBody.insertRow();
-                    newRow.innerHTML = `
-                        <td>${API_URLS[country].name}</td>
-                        <td>${prices[country].bid.toFixed(2)}</td>
-                        <td>${prices[country].ask.toFixed(2)}</td>
-                        <td style="font-size: 12px; color: #666;">${prices[country].source}</td>
-                    `;
-                }
-            });
+           // Poblar tabla de precios
+           Object.keys(API_URLS).forEach(country => {
+               if (prices[country]) {
+                   const newRow = tableAPIBody.insertRow();
+                   newRow.innerHTML = `
+                       <td>${API_URLS[country].name}</td>
+                       <td>${prices[country].bid.toFixed(2)}</td>
+                       <td>${prices[country].ask.toFixed(2)}</td>
+                       <td style="font-size: 12px; color: #666;">${prices[country].source}</td>
+                   `;
+               }
+           });
 
-            // Poblar tabla de conversiones
-            const countries = Object.keys(API_URLS);
-            for (const buyerCountry of countries) {
-                let rowResults = `<tr><td>${API_URLS[buyerCountry].name}</td>`;
+           // Poblar tabla de conversiones
+           const countries = Object.keys(API_URLS);
+           for (const buyerCountry of countries) {
+               let rowResults = `<tr><td>${API_URLS[buyerCountry].name}</td>`;
 
-                for (const sellerCountry of countries) {
-                    let conversionRate = "--";
-                    let cellClass = "";
+               for (const sellerCountry of countries) {
+                   let conversionRate = "--";
+                   let cellClass = "";
 
-                    if (buyerCountry !== sellerCountry) {
-                        if (prices[buyerCountry] && prices[sellerCountry]) {
-                            if (buyerCountry === "colombia" && sellerCountry === "venezuela") {
-                                conversionRate = calculateColombiaConversion(
-                                    prices[buyerCountry].bid,
-                                    prices[sellerCountry].ask,
-                                    commission
-                                ).toFixed(5);
-                            } else if (sellerCountry === "venezuela") {
-                                conversionRate = calculateConversion(
-                                    prices[sellerCountry].ask,
-                                    prices[buyerCountry].bid,
-                                    commission
-                                ).toFixed(5);
-                            } else {
-                                conversionRate = calculateCrossConversion(
-                                    prices[buyerCountry].bid,
-                                    prices[sellerCountry].ask,
-                                    commission
-                                ).toFixed(5);
-                            }
-                        }
-                    } else {
-                        cellClass = "gray-cell";
-                    }
+                   if (buyerCountry !== sellerCountry) {
+                       if (prices[buyerCountry] && prices[sellerCountry]) {
+                           if (buyerCountry === "colombia" && sellerCountry === "venezuela") {
+                               conversionRate = calculateColombiaConversion(
+                                   prices[buyerCountry].bid,
+                                   prices[sellerCountry].ask,
+                                   commission
+                               ).toFixed(5);
+                           } else if (sellerCountry === "venezuela") {
+                               conversionRate = calculateConversion(
+                                   prices[sellerCountry].ask,
+                                   prices[buyerCountry].bid,
+                                   commission
+                               ).toFixed(5);
+                           } else {
+                               conversionRate = calculateCrossConversion(
+                                   prices[buyerCountry].bid,
+                                   prices[sellerCountry].ask,
+                                   commission
+                               ).toFixed(5);
+                           }
+                       }
+                   } else {
+                       cellClass = "gray-cell";
+                   }
 
-                    rowResults += `<td class="${cellClass}">${conversionRate}</td>`;
-                }
+                   rowResults += `<td class="${cellClass}">${conversionRate}</td>`;
+               }
 
-                rowResults += '</tr>';
-                tableResultsBody.innerHTML += rowResults;
-            }
-            
-            updateLastUpdateTime();
-        }
+               rowResults += '</tr>';
+               tableResultsBody.innerHTML += rowResults;
+           }
+           
+           updateLastUpdateTime();
+       }
 
-        window.onload = function () {
-            console.log('🎯 Iniciando Mandareal Exchange...');
-            
-            // Inicializar inmediatamente con precios de mercado
-            initializeMarketPrices();
-            actualizarSelectores();
-            updateCommissionFromSelect();
-            
-            // Intentar actualizar con datos reales en segundo plano
-            setTimeout(() => {
-                console.log('🔄 Intentando actualizar con datos P2P en vivo...');
-                buildConversionTable();
-            }, 3000);
-            
-            console.log('✅ Aplicación lista. Revisa la consola para ver el estado de las fuentes P2P.');
-        };
-    </script>
+       window.onload = function () {
+           console.log('🎯 Iniciando Mandareal Exchange...');
+           
+           // Inicializar inmediatamente con precios de mercado
+           initializeMarketPrices();
+           actualizarSelectores();
+           updateCommissionFromSelect();
+           
+           // Intentar actualizar con datos reales en segundo plano
+           setTimeout(() => {
+               console.log('🔄 Intentando actualizar con datos P2P en vivo...');
+               buildConversionTable();
+           }, 3000);
+           
+           console.log('✅ Aplicación lista. Revisa la consola para ver el estado de las fuentes P2P.');
+       };
+   </script>
 </body>
 </html>
