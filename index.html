@@ -362,7 +362,7 @@
                         <th>Perú</th>
                         <th>Argentina</th>
                         <th>Chile</th>
-                        <th>Brasil</th>
+                        <!--<th>Brasil</th>-->
                     </tr>
                 </thead>
                 <tbody id="priceTableResultsBody">
@@ -406,7 +406,7 @@
             peru: { fiat: "PEN", name: "Perú" },
             argentina: { fiat: "ARS", name: "Argentina" },
             chile: { fiat: "CLP", name: "Chile" },
-            brasil: { fiat: "BRL", name: "Brasil" }
+            // brasil: { fiat: "BRL", name: "Brasil" }
         };
 
         let prices = {};
@@ -419,7 +419,7 @@
             peru: "PEN",
             argentina: "ARS",
             chile: "CLP",
-            brasil: "BRL"
+            // brasil: "BRL"
         };
 
         // Precios base actualizados
@@ -430,7 +430,7 @@
             peru: { bid: 3.82, ask: 3.87, source: "Mercado peruano" },
             argentina: { bid: 1045, ask: 1060, source: "Blue/P2P" },
             chile: { bid: 988, ask: 998, source: "Mercado chileno" },
-            brasil: { bid: 6.12, ask: 6.18, source: "PIX/P2P" }
+            // brasil: { bid: 6.12, ask: 6.18, source: "PIX/P2P" }
         };
 
         function updateCommissionFromSelect() {
@@ -451,11 +451,11 @@
             const input = document.getElementById('commissionInput');
             const inputValue = parseFloat(input.value);
             
-            if (inputValue === 7.5) {
-                select.value = '7.5';
+            if (inputValue === 8.5) {
+                select.value = '8.5';
                 input.disabled = true;
-            } else if (inputValue === 6.5) {
-                select.value = '6.5';
+            } else if (inputValue === 7.5) {
+                select.value = '7.5';
                 input.disabled = true;
             } else {
                 select.value = 'custom';
@@ -526,7 +526,7 @@
                 'PEN': 'https://criptoya.com/api/binancep2p/usdt/pen',
                 'ARS': 'https://criptoya.com/api/binancep2p/usdt/ars',
                 'CLP': 'https://criptoya.com/api/binancep2p/usdt/clp',
-                'BRL': 'https://criptoya.com/api/binancep2p/usdt/brl'
+                // 'BRL': 'https://criptoya.com/api/binancep2p/usdt/brl'
             };
 
             const url = criptoyaUrls[fiat];
